@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+    web-api:
+        build: ./project
+        image: miguelalb/backendapi-joelcel
+        volumes:
+            - ./project:/usr/src/app
+        ports:
+            - 8005:8001
+        env_file:
+            - ./project/app/config/.env
+        depends_on:
+            - web-db
+    
+    web-db:
+        build:
+            context: ./project/db
+            dockerfile: Dockerfile
+        image: miguelalb/backendapi-db
+        expose:
+            - 5432
+        env_file:
+            - ./project/db/.env
+    
+    pg-admin:
+        image: dpage/pgadmin4
+        ports:
+            - 5051:80
+        env_file: 
+            - ./project/db/.env
+        depends_on: 
+            - web-db
