@@ -4,6 +4,7 @@ from functools import lru_cache
 from dotenv import load_dotenv
 from pydantic import BaseSettings, AnyUrl
 
+
 load_dotenv()
 log = logging.getLogger("uvicorn")
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     TESTING: bool
     DATABASE_URL: AnyUrl
     DATABASE_TEST_URL: AnyUrl
+
 
 @lru_cache()
 def get_settings() -> BaseSettings:
