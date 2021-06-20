@@ -10,7 +10,7 @@ services:
         ports:
             - 8005:8001
         env_file:
-            - ./project/app/config/.env
+            - ./project/app/core/.env
         depends_on:
             - web-db
     
