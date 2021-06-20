@@ -51,3 +51,11 @@ class CategoryService:
         await Category.filter(id=id)\
               .update(**category.dict(exclude_unset=True))
         return await cls.get_category_by_id(id)
+    
+    @staticmethod
+    async def delete_category(id: str):
+        deleted_count = await Category.filter(id=id)\
+                              .delete()
+        if not deleted_count:
+            return False
+        return True

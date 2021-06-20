@@ -108,3 +108,21 @@ def test_update_category_name_taken(test_app_with_db):
     assert response.json() == {
         "detail": strings.NAME_TAKEN
     }
+
+
+def test_delete_category(test_app_with_db):
+    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
+    response = test_app_with_db.post("/category/", json={"name": fake_name})
+    category_id = response.json()["id"]
+
+    response = test_app_with_db.delete(f"/category/{category_id}")
+    assert response.status_code == 200
+    assert response.json() == {
+        "detail": strings.ITEM_DELETED_SUCCESSFULLY
+    }
+
+    response = test_app_with_db.get(f"/category/{category_id}")
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": strings.ITEM_NOT_FOUND_IN_DB
+    }

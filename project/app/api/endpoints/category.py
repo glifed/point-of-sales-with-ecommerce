@@ -7,7 +7,10 @@ from app.models.schema.category import (
     ResponseCategory,
     ResponseCategoryListPaginated
 )
-from app.models.schema.schemas import CategoryIn_Pydantic
+from app.models.schema.schemas import (
+    CategoryIn_Pydantic,
+    CustomResponse
+)
 from app.resources import strings
 from app.services.category import CategoryService
 
@@ -79,6 +82,26 @@ async def get_specific_category(id: str):
     try:
         category = await CategoryService.get_category_by_id(id)
         return ResponseCategory(**category.dict())
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=strings.ITEM_NOT_FOUND_IN_DB
+        )
+    except OperationalError as o:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=strings.INVALID_UUID
+        )
+
+
+@router.delete("/{id}", response_model=CustomResponse)
+async def delete_category(id: str):
+    try:
+        deleted = await CategoryService.delete_category(id)
+        if not deleted:
+            raise DoesNotExist
+        return CustomResponse(detail=strings.ITEM_DELETED_SUCCESSFULLY)
+    
     except DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

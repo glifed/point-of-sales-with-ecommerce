@@ -18,6 +18,10 @@ Category_List_Pydantic = pydantic_queryset_creator(Category)
 CategoryIn_Pydantic = pydantic_model_creator(Category, name="CategoryIn", exclude_readonly=True)
 
 
+class CustomResponse(BaseModel):
+    detail: str
+
+
 class Pagination(BaseModel):
     skip: int
     limit: int

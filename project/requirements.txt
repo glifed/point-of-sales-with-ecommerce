@@ -1,6 +1,7 @@
 asyncpg
 Faker
 fastapi
+gunicorn
 pytest
 python-dotenv
 python-multipart
