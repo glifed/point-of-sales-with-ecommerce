@@ -11,3 +11,7 @@ class ResponseCategory(CategoryInfo):
 
 class ResponseCategoryList(BaseModel):
     categories: List[CategoryInfo]
+
+
+class ResponseCategoryListPaginated(ResponseCategoryList):
+    total: int

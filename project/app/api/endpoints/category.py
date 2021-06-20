@@ -1,15 +1,30 @@
-from typing import Any
-from uuid import UUID, uuid4
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, status
+from tortoise.exceptions import DoesNotExist, OperationalError
 
-from app.models.schema.category import ResponseCategory
+from app.models.schema.category import (
+    ResponseCategory,
+    ResponseCategoryListPaginated
+)
 from app.models.schema.schemas import CategoryIn_Pydantic
 from app.resources import strings
 from app.services.category import CategoryService
 
 
 router = APIRouter()
+
+
+@router.get("/", name="Category:All", response_model=ResponseCategoryListPaginated)
+async def get_all(skip: Optional[int]=0, limit: Optional[int]=100):
+    try:
+        all_category = await CategoryService.get_all_categories_paginated(skip, limit)
+        return all_category
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=strings.ITEM_NOT_FOUND_IN_DB
+        )
 
 
 @router.post("/", name="category:Create", response_model=ResponseCategory,
@@ -34,4 +49,23 @@ async def create_category(
         HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=strings.ERROR_IN_SAVING_ITEM
+        )
+
+
+@router.get("/{id}", name="Category:Get Category by ID",response_model=ResponseCategory)
+async def get_specific_category(id: str):
+    try:
+        print("This is what I got")
+        print(id)
+        category = await CategoryService.get_category_by_id(id)
+        return ResponseCategory(**category.dict())
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=strings.ITEM_NOT_FOUND_IN_DB
+        )
+    except OperationalError as o:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=strings.INVALID_UUID
         )

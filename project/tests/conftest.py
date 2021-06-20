@@ -12,6 +12,7 @@ settings = get_settings()
 
 def get_settings_override():
     return Settings(TESTING=1,
+                    ENVIRONMENT="test",
                     DATABASE_URL=settings.DATABASE_TEST_URL)
 
 

@@ -1,4 +1,5 @@
 asyncpg
+Faker
 fastapi
 pytest
 python-dotenv
