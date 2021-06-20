@@ -5,8 +5,8 @@ from pydantic import BaseModel
 from app.models.schema.schemas import CategoryInfo
 
 
-class ResponseCategory(BaseModel):
-    category: CategoryInfo
+class ResponseCategory(CategoryInfo):
+    pass
 
 
 class ResponseCategoryList(BaseModel):

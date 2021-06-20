@@ -1,9 +1,10 @@
 from typing import Any
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, HTTPException, status
 
 from app.models.schema.category import ResponseCategory
-from app.models.schema.schemas import CategoryIn_Pydantic, Category_Pydantic
+from app.models.schema.schemas import CategoryIn_Pydantic
 from app.resources import strings
 from app.services.category import CategoryService
 
@@ -25,11 +26,9 @@ async def create_category(
             detail=strings.NAME_TAKEN
         )
     try:
-        category = await CategoryService.create_category(category_create)
-        resp = await ResponseCategory(category)
-        print("resp?")
-        print(resp)
-        return await ResponseCategory(category=category)
+        category_obj = await CategoryService.create_category(category_create)
+        cat_dict = category_obj.dict()
+        return ResponseCategory(**cat_dict)
 
     except Exception as e:
         HTTPException(

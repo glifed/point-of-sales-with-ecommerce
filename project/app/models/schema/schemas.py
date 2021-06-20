@@ -4,6 +4,7 @@ from tortoise import Tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
 from pydantic import BaseModel
 
+from app.models.domain.base import Status
 from app.models.domain.category import Category
 
 
@@ -20,4 +21,3 @@ CategoryIn_Pydantic = pydantic_model_creator(Category, name="CategoryIn", exclud
 class CategoryInfo(BaseModel):
     id: UUID
     name: str
-    status: int
