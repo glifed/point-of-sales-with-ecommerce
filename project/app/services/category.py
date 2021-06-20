@@ -44,3 +44,10 @@ class CategoryService:
     async def get_category_by_id(id: str):
         category = await Category.get(id=id)
         return await Category_Pydantic.from_tortoise_orm(category)
+    
+
+    @classmethod
+    async def update_category(cls, id: str, category: CategoryIn_Pydantic):
+        await Category.filter(id=id)\
+              .update(**category.dict(exclude_unset=True))
+        return await cls.get_category_by_id(id)

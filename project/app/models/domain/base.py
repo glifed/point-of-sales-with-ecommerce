@@ -1,4 +1,4 @@
-from enum import IntEnum, unique
+from enum import Enum, IntEnum, unique
 
 from tortoise import models, fields
 
@@ -7,11 +7,19 @@ from tortoise import models, fields
 class Status(IntEnum):
     ACTIVE = 1
     INACTIVE = 0
-    DELETED = -1
 
 
 class StatusMixin():
-    status = fields.CharEnumField(Status, default=Status.ACTIVE)
+    status = fields.IntEnumField(Status, default=Status.ACTIVE)
+
+
+class ItemType(str, Enum):
+    PRODUCTO = "producto"
+    SERVICIO = "servicio"
+
+
+class ItemTypeMixin():
+    item_type = fields.CharEnumField(ItemType, default=ItemType.PRODUCTO)
 
 
 class TimestampMixin():

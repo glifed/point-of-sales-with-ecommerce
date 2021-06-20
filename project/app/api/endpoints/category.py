@@ -52,11 +52,31 @@ async def create_category(
         )
 
 
-@router.get("/{id}", name="Category:Get Category by ID",response_model=ResponseCategory)
+@router.put("/{id}", name="Category:Update Category", response_model=ResponseCategory)
+async def update_category(id: str, category_update: CategoryIn_Pydantic):
+    if await CategoryService.check_categoryname_is_taken(category_update.name):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=strings.NAME_TAKEN
+        )
+    try:
+        updated_category = await CategoryService.update_category(id, category_update)
+        return ResponseCategory(**updated_category.dict())
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=strings.ITEM_NOT_FOUND_IN_DB
+        )
+    except OperationalError as o:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=strings.INVALID_UUID
+        )
+
+
+@router.get("/{id}", name="Category:Get Category by ID", response_model=ResponseCategory)
 async def get_specific_category(id: str):
     try:
-        print("This is what I got")
-        print(id)
         category = await CategoryService.get_category_by_id(id)
         return ResponseCategory(**category.dict())
     except DoesNotExist as e:
