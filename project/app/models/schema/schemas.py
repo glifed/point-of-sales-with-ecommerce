@@ -2,7 +2,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, validator
 from tortoise import Tortoise
-from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
+from tortoise.contrib.pydantic import (pydantic_model_creator,
+                                       pydantic_queryset_creator)
 
 from app.models.domain.category import Category
 

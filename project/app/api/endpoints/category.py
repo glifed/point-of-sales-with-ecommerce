@@ -3,7 +3,8 @@ from typing import Any, Optional
 from fastapi import APIRouter, HTTPException, status
 from tortoise.exceptions import DoesNotExist, OperationalError
 
-from app.models.schema.category import ResponseCategory, ResponseCategoryListPaginated
+from app.models.schema.category import (ResponseCategory,
+                                        ResponseCategoryListPaginated)
 from app.models.schema.schemas import CategoryIn_Pydantic, CustomResponse
 from app.resources import strings
 from app.services.category import CategoryService
