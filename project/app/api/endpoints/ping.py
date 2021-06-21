@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 
-from app.core.config import get_settings, Settings
+from app.core.config import Settings, get_settings
 
 router = APIRouter()
 
 
 @router.get("/ping")
-async def pong(settings: Settings=Depends(get_settings)):
+async def pong(settings: Settings = Depends(get_settings)):
     return {
         "ping": "pong!",
         "environment": settings.ENVIRONMENT,

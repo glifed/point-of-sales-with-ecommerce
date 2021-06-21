@@ -1,13 +1,13 @@
-from project.app.models.domain.base import (
+from tortoise import fields
+
+from app.models.domain.base import (
     AbstractBaseModel,
+    ItemTypeMixin,
     NameMixin,
     StatusMixin,
     TimestampMixin,
-    ItemTypeMixin
 )
-from tortoise import fields
 
-from app.models.domain.base import *
 
 class Product(AbstractBaseModel, NameMixin, TimestampMixin, StatusMixin, ItemTypeMixin):
     sku = fields.CharField(max_length=20, index=True, null=True)
@@ -21,5 +21,6 @@ class Product(AbstractBaseModel, NameMixin, TimestampMixin, StatusMixin, ItemTyp
     price = fields.DecimalField(max_digits=10, decimal_places=2, default=0)
     rating = fields.IntField(default=5)
     excento_itbis = fields.BooleanField(default=False)
-    
+
+
 # TODO

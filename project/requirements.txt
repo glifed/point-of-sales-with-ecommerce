@@ -1,8 +1,12 @@
 asyncpg
+black
 Faker
 fastapi
+flake8
 gunicorn
+isort
 pytest
+pytest-cov
 python-dotenv
 python-multipart
 requests

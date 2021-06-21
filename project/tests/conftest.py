@@ -4,16 +4,16 @@ import pytest
 from starlette.testclient import TestClient
 from tortoise.contrib.fastapi import register_tortoise
 
+from app.core.config import Settings, get_settings
 from app.main import create_application
-from app.core.config import get_settings, Settings
 
 settings = get_settings()
 
 
 def get_settings_override():
-    return Settings(TESTING=1,
-                    ENVIRONMENT="test",
-                    DATABASE_URL=settings.DATABASE_TEST_URL)
+    return Settings(
+        TESTING=1, ENVIRONMENT="test", DATABASE_URL=settings.DATABASE_TEST_URL
+    )
 
 
 @pytest.fixture(scope="module")
@@ -25,9 +25,8 @@ def test_app():
 
         # testing
         yield test_client
-    
-    # tear down
 
+    # tear down
 
 
 @pytest.fixture(scope="module")
@@ -46,5 +45,5 @@ def test_app_with_db():
 
         # testing
         yield test_client
-    
+
     # tear down

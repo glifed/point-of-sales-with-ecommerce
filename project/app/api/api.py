@@ -1,10 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.endpoints import (
-    ping,
-    category
-)
-
+from app.api.endpoints import category, ping
 
 router = APIRouter()
 
