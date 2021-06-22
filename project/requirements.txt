@@ -5,11 +5,11 @@ fastapi
 flake8
 gunicorn
 isort
-passlib
+passlib[bcrypt]
 pytest
 pytest-cov
 python-dotenv
-python-jose
+python-jose[cryptography]
 python-multipart
 requests
 tortoise-orm

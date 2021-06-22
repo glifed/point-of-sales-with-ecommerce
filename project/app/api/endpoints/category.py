@@ -16,11 +16,13 @@ router = APIRouter()
 async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
     try:
         all_category = await CategoryService.get_all_categories_paginated(skip, limit)
-        return all_category
+    
     except DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=strings.ITEM_NOT_FOUND_IN_DB
         )
+    
+    return all_category
 
 
 @router.post(
@@ -40,12 +42,13 @@ async def create_category(category_create: CategoryIn_Pydantic) -> Any:
     try:
         category_obj = await CategoryService.create_category(category_create)
         cat_dict = category_obj.dict()
-        return ResponseCategory(**cat_dict)
 
-    except Exception:
+    except OperationalError:
         HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=strings.ERROR_IN_SAVING_ITEM
         )
+    
+    return ResponseCategory(**cat_dict)
 
 
 @router.put("/{id}", name="Category:Update Category", response_model=ResponseCategory)
@@ -56,7 +59,7 @@ async def update_category(id: str, category_update: CategoryIn_Pydantic):
         )
     try:
         updated_category = await CategoryService.update_category(id, category_update)
-        return ResponseCategory(**updated_category.dict())
+    
     except DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=strings.ITEM_NOT_FOUND_IN_DB
@@ -65,6 +68,8 @@ async def update_category(id: str, category_update: CategoryIn_Pydantic):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=strings.INVALID_UUID
         )
+    
+    return ResponseCategory(**updated_category.dict())
 
 
 @router.get(
@@ -73,7 +78,7 @@ async def update_category(id: str, category_update: CategoryIn_Pydantic):
 async def get_specific_category(id: str):
     try:
         category = await CategoryService.get_category_by_id(id)
-        return ResponseCategory(**category.dict())
+    
     except DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=strings.ITEM_NOT_FOUND_IN_DB
@@ -82,6 +87,8 @@ async def get_specific_category(id: str):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=strings.INVALID_UUID
         )
+    
+    return ResponseCategory(**category.dict())
 
 
 @router.delete("/{id}", response_model=CustomResponse)
@@ -90,7 +97,6 @@ async def delete_category(id: str):
         deleted = await CategoryService.delete_category(id)
         if not deleted:
             raise DoesNotExist
-        return CustomResponse(detail=strings.ITEM_DELETED_SUCCESSFULLY)
 
     except DoesNotExist:
         raise HTTPException(
@@ -100,3 +106,5 @@ async def delete_category(id: str):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=strings.INVALID_UUID
         )
+    
+    return CustomResponse(detail=strings.ITEM_DELETED_SUCCESSFULLY)
