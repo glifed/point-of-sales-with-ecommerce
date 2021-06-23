@@ -6,6 +6,7 @@ from tortoise.contrib.fastapi import register_tortoise
 
 from app.core.config import Settings, get_settings
 from app.main import create_application
+from app.resources.db import MODELS
 
 settings = get_settings()
 
@@ -37,7 +38,7 @@ def test_app_with_db():
     register_tortoise(
         app,
         db_url=os.environ.get("DATABASE_TEST_URL"),
-        modules={"models": ["app.models.domain.category"]},
+        modules={"models": MODELS},
         generate_schemas=True,
         add_exception_handlers=True,
     )

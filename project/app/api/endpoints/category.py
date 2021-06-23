@@ -1,11 +1,12 @@
 from typing import Any, Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from tortoise.exceptions import DoesNotExist, OperationalError
 
+from app.api.dependencies import get_current_active_user
 from app.models.schema.category import (ResponseCategory,
                                         ResponseCategoryListPaginated)
-from app.models.schema.schemas import CategoryIn_Pydantic, CustomResponse
+from app.models.schema.schemas import CategoryIn_Pydantic, CustomResponse, User_Pydantic
 from app.resources import strings
 from app.services.category import CategoryService
 
@@ -27,11 +28,14 @@ async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
 
 @router.post(
     "/",
-    name="category:Create",
+    name="Category:Create",
     response_model=ResponseCategory,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_category(category_create: CategoryIn_Pydantic) -> Any:
+async def create_category(
+    category_create: CategoryIn_Pydantic,
+    current_user: User_Pydantic = Depends(get_current_active_user)
+) -> Any:
     """
     Create new category.
     """
@@ -92,7 +96,10 @@ async def get_specific_category(id: str):
 
 
 @router.delete("/{id}", response_model=CustomResponse)
-async def delete_category(id: str):
+async def delete_category(
+    id: str,
+    current_user: User_Pydantic = Depends(get_current_active_user)
+):
     try:
         deleted = await CategoryService.delete_category(id)
         if not deleted:
