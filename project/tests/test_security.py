@@ -1,10 +1,7 @@
 from faker import Faker
 
 from app.core.config import get_settings
-from app.core.security import (create_access_token,
-                               create_refresh_token,
-                               get_password_hash,
-                               verify_password)
+from app.core.security import get_password_hash, verify_password
 
 settings = get_settings()
 

@@ -42,4 +42,4 @@ async def login_access_token(
     refresh_token = create_refresh_token(str(user.id),
                                          expires_delta=refresh_token_expires)
 
-    return TokenResponse(access_token, refresh_token)
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token)

@@ -34,7 +34,7 @@ CategoryIn_Pydantic = pydantic_model_creator(
 
 # custom schemas
 class Token(BaseModel):
-    access_token: str
+    token: str
     token_type: str
 
 
