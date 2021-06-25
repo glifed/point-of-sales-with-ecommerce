@@ -8,7 +8,7 @@ settings = get_settings()
 
 def test_password_hash_functionality():
     """
-    Test password has generator.
+    Test password hash generator.
     """
     
     password = "Test_" + Faker().color_name() + Faker().first_name()

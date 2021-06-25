@@ -56,7 +56,11 @@ async def create_category(
 
 
 @router.put("/{id}", name="Category:Update Category", response_model=ResponseCategory)
-async def update_category(id: str, category_update: CategoryIn_Pydantic):
+async def update_category(
+    id: str,
+    category_update: CategoryIn_Pydantic,
+    current_user: User_Pydantic = Depends(get_current_active_user),
+):
     if await CategoryService.check_categoryname_is_taken(category_update.name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=strings.NAME_TAKEN
@@ -98,7 +102,7 @@ async def get_specific_category(id: str):
 @router.delete("/{id}", response_model=CustomResponse)
 async def delete_category(
     id: str,
-    current_user: User_Pydantic = Depends(get_current_active_user)
+    current_user: User_Pydantic = Depends(get_current_active_user),
 ):
     try:
         deleted = await CategoryService.delete_category(id)

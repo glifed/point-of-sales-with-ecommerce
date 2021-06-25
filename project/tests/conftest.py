@@ -55,6 +55,7 @@ def test_app_with_db():
 
 @pytest.fixture(scope="module")
 def test_jwt_token(test_app_with_db):
+    # Create fake user
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/user/",
@@ -67,10 +68,12 @@ def test_jwt_token(test_app_with_db):
             "comision": 0
         }
     )
+
+    # Log in with fake user
     response = test_app_with_db.post(
         url=f"{settings.API_V1_STR}/login",
         data={"username": fake_name, "password":fake_name},
     )
-    tokens = response.json()
+    tokens = response.json() # Access and Refresh tokens
     
     return tokens
