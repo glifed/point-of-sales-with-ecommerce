@@ -61,3 +61,18 @@ def test_get_category_incorrect_id(test_app_with_db):
     assert response.json() == {
         "detail": strings.ITEM_NOT_FOUND_IN_DB
     }
+
+
+def test_update_category(test_app_with_db):
+    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
+    fake_name2 = "Test_" + Faker().color_name() + Faker().first_name()
+
+    response = test_app_with_db.post("/category/", json={"name": fake_name})
+    category_id = response.json()["id"]
+
+    response = test_app_with_db.put(f"/category/{category_id}", json={"name": fake_name2})
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": category_id,
+        "name": fake_name2
+    }
