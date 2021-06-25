@@ -1,8 +1,15 @@
 asyncpg
+black
 Faker
 fastapi
+flake8
+gunicorn
+isort
+passlib[bcrypt]
 pytest
+pytest-cov
 python-dotenv
+python-jose[cryptography]
 python-multipart
 requests
 tortoise-orm

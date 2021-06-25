@@ -7,25 +7,22 @@ from app.api import api
 from app.core.config import get_settings
 from app.db import init_db
 
-
 log = logging.getLogger("uvicorn")
 
 
 def create_application() -> FastAPI:  # application factory
     settings = get_settings()
-    
-    app = FastAPI(title='JoelCelAPI')
-    
+
+    app = FastAPI(title="JoelCelAPI")
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            str(origin) for origin in \
-            settings.BACKEND_CORS_ORIGINS],
+        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
         allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=["*"],        
+        allow_headers=["*"],
     )
-    
+
     app.include_router(api.router)
 
     return app
