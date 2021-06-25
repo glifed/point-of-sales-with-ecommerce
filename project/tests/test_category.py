@@ -6,20 +6,36 @@ from app.resources import strings
 settings = get_settings()
 
 
-def test_create_category(test_app_with_db):
+def test_create_category(test_app_with_db, test_jwt_token):
+    access_token = test_jwt_token['access_token']
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    response = test_app_with_db.post(f"{settings.API_V1_STR}/category/", json={"name": fake_name})
+    
+    response = test_app_with_db.post(
+        f"{settings.API_V1_STR}/category/",
+        headers={"Authorization": f"{access_token['token_type']} {access_token['token']}"},
+        json={"name": fake_name}
+    )
 
     assert response.status_code == 201
     assert response.json()["name"] == fake_name
 
 
-def test_create_category_name_taken(test_app_with_db):
+def test_create_category_name_taken(test_app_with_db, test_jwt_token):
+    access_token = test_jwt_token['access_token']
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    response = test_app_with_db.post(f"{settings.API_V1_STR}/category/", json={"name": fake_name})
+    
+    response = test_app_with_db.post(
+        f"{settings.API_V1_STR}/category/",
+        headers={"Authorization": f"{access_token['token_type']} {access_token['token']}"},
+        json={"name": fake_name}
+    )
     category_name = response.json()["name"]
 
-    response = test_app_with_db.post(f"{settings.API_V1_STR}/category/", json={"name": category_name})
+    response = test_app_with_db.post(
+        f"{settings.API_V1_STR}/category/",
+        headers={"Authorization": f"{access_token['token_type']} {access_token['token']}"},
+        json={"name": category_name}
+    )
 
     assert response.status_code == 400
     assert response.json() == {"detail": strings.NAME_TAKEN}
