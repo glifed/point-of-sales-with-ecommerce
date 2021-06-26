@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.core.config import get_settings
 from app.core.security import create_access_token, create_refresh_token
 from app.models.schema.schemas import TokenResponse
-from app.resources import strings
+from app.resources.strings import APIResponseMessage
 from app.services.user import UserService
 
 settings = get_settings()
@@ -28,12 +28,12 @@ async def login_access_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=strings.INVALID_USERNAME_PASSWORD
+            detail=APIResponseMessage.INVALID_USERNAME_PASSWORD
         )
     if not UserService.is_active(user):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=strings.INACTIVE_USER
+            detail=APIResponseMessage.INACTIVE_USER
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     refresh_token_expires = timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)

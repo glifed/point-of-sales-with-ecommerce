@@ -1,12 +1,18 @@
+from typing import List
+
 from fastapi import HTTPException, status
 
 from app.core.security import get_password_hash, verify_password
 from app.models.domain.base import Status
 from app.models.domain.user import User
 from app.models.schema.schemas import User_Pydantic
-from app.resources import strings
+from app.resources.strings import APIResponseMessage
+
 
 class UserService:
+    """
+    Methods related to the user.
+    """
 
     @classmethod
     async def check_username_is_taken(cls, username):
@@ -16,7 +22,7 @@ class UserService:
         return False
 
     
-    # crud
+    # CRUD
     @staticmethod
     async def create_user(user_create):
         # hash password
@@ -34,12 +40,12 @@ class UserService:
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=strings.ITEM_NOT_FOUND,
+                detail=APIResponseMessage.ITEM_NOT_FOUND,
             )
         return await User_Pydantic.from_tortoise_orm(user)
 
     
-    # user authentication
+    # User Authentication
     @staticmethod
     async def get_by_username(username: str):
         return await User.get_or_none(username=username)
@@ -59,3 +65,27 @@ class UserService:
     def is_active(user: User_Pydantic):
         return user.status == Status.ACTIVE
     
+    
+    # User Authorization
+    @staticmethod
+    async def validate_req_scopes(
+        req_scopes: str, user_scopes: dict,
+    ) -> bool:
+        
+        if user_scopes:
+            if req_scopes in user_scopes:
+                return True
+            return False
+        return False
+    
+
+    @staticmethod
+    async def validate_onetime_scopes(
+        req_scopes: str, onetime_scopes: dict,
+    ) -> bool:
+        
+        if onetime_scopes:
+            if req_scopes in onetime_scopes:
+                return True
+            return False
+        return False

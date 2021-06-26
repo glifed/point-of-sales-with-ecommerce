@@ -7,7 +7,7 @@ from app.models.schema.user import (ResponseUser,
                                     ResponseUserList,
                                     ResponseUserListPaginated)
 from app.models.schema.schemas import UserIn_Pydantic
-from app.resources import strings
+from app.resources.strings import APIResponseMessage
 from app.services.user import UserService
 
 router = APIRouter()
@@ -28,7 +28,7 @@ async def create_user(
     if await UserService.check_username_is_taken(user_create.username):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=strings.NAME_TAKEN
+            detail=APIResponseMessage.NAME_TAKEN
         )
     try:
         user_obj = await UserService.create_user(user_create)
@@ -36,7 +36,7 @@ async def create_user(
     except OperationalError:
         HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=strings.ERROR_IN_SAVING_ITEM
+            detail=APIResponseMessage.ERROR_IN_SAVING_ITEM
         )
     
     return ResponseUser(**user_dict)

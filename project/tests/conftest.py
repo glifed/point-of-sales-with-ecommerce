@@ -9,6 +9,7 @@ from tortoise.contrib.fastapi import register_tortoise
 from app.core.config import Settings, get_settings
 from app.core.security import create_access_token
 from app.main import create_application
+from app.models.schema.security import Action, Model
 from app.resources.db import MODELS
 
 settings = get_settings()
@@ -65,7 +66,8 @@ def test_jwt_token(test_app_with_db):
             "full_name": fake_name,
             "cedula": Faker().isbn10(separator=''),
             "sueldo": 0,
-            "comision": 0
+            "comision": 0,
+            "scopes": {f"{Model.CATEGORY}:{Action.CREATE}": "Create Category"}
         }
     )
 

@@ -1,7 +1,7 @@
 from faker import Faker
 
 from app.core.config import get_settings
-from app.resources import strings
+from app.resources.strings import APIResponseMessage
 
 settings = get_settings()
 
@@ -44,7 +44,7 @@ def test_create_category_name_taken(test_app_with_db, test_jwt_token):
     )
 
     assert response.status_code == 400
-    assert response.json() == {"detail": strings.NAME_TAKEN}
+    assert response.json() == {"detail": APIResponseMessage.NAME_TAKEN}
 
 
 def test_get_categories(test_app_with_db, test_jwt_token):
@@ -91,12 +91,12 @@ def test_get_category_incorrect_id(test_app_with_db):
     response = test_app_with_db.get(f"{settings.API_V1_STR}/category/83d53aa8-47b0-4e23-8015-3b26d2c841de")
 
     assert response.status_code == 404
-    assert response.json() == {"detail": strings.ITEM_NOT_FOUND_IN_DB}
+    assert response.json() == {"detail": APIResponseMessage.ITEM_NOT_FOUND_IN_DB}
 
     response = test_app_with_db.get(f"{settings.API_V1_STR}/category/aa2")
 
     assert response.status_code == 400
-    assert response.json() == {"detail": strings.INVALID_UUID}
+    assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
 
 
 def test_update_category(test_app_with_db, test_jwt_token):
@@ -138,7 +138,7 @@ def test_update_category_incorrect_id(test_app_with_db, test_jwt_token):
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": strings.ITEM_NOT_FOUND_IN_DB}
+    assert response.json() == {"detail": APIResponseMessage.ITEM_NOT_FOUND_IN_DB}
 
     response = test_app_with_db.put(
         f"{settings.API_V1_STR}/category/a22",
@@ -149,7 +149,7 @@ def test_update_category_incorrect_id(test_app_with_db, test_jwt_token):
     )
     
     assert response.status_code == 400
-    assert response.json() == {"detail": strings.INVALID_UUID}
+    assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
 
 
 def test_update_category_name_taken(test_app_with_db, test_jwt_token):
@@ -187,7 +187,7 @@ def test_update_category_name_taken(test_app_with_db, test_jwt_token):
     )
 
     assert response.status_code == 400
-    assert response.json() == {"detail": strings.NAME_TAKEN}
+    assert response.json() == {"detail": APIResponseMessage.NAME_TAKEN}
 
 
 def test_delete_category(test_app_with_db, test_jwt_token):
@@ -212,11 +212,11 @@ def test_delete_category(test_app_with_db, test_jwt_token):
         },
     )
     assert response.status_code == 200
-    assert response.json() == {"detail": strings.ITEM_DELETED_SUCCESSFULLY}
+    assert response.json() == {"detail": APIResponseMessage.ITEM_DELETED_SUCCESSFULLY}
 
     response = test_app_with_db.get(f"{settings.API_V1_STR}/category/{category_id}")
     assert response.status_code == 404
-    assert response.json() == {"detail": strings.ITEM_NOT_FOUND_IN_DB}
+    assert response.json() == {"detail": APIResponseMessage.ITEM_NOT_FOUND_IN_DB}
 
 
 def test_delete_category_incorrect_id(test_app_with_db, test_jwt_token):
@@ -230,7 +230,7 @@ def test_delete_category_incorrect_id(test_app_with_db, test_jwt_token):
     )
 
     assert response.status_code == 404
-    assert response.json() == {"detail": strings.ITEM_NOT_FOUND_IN_DB}
+    assert response.json() == {"detail": APIResponseMessage.ITEM_NOT_FOUND_IN_DB}
 
     response = test_app_with_db.delete(
         f"{settings.API_V1_STR}/category/a22",
@@ -240,4 +240,4 @@ def test_delete_category_incorrect_id(test_app_with_db, test_jwt_token):
     )
 
     assert response.status_code == 400
-    assert response.json() == {"detail": strings.INVALID_UUID}
+    assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
