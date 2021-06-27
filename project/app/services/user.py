@@ -1,11 +1,16 @@
-from typing import List
-
 from fastapi import HTTPException, status
 
 from app.core.security import get_password_hash, verify_password
 from app.models.domain.base import Status
 from app.models.domain.user import User
 from app.models.schema.schemas import User_Pydantic
+from app.resources.exceptions import (
+    InactiveUserException,
+    InsufficientPermissionsException,
+    ItemNotFoundException,
+    InvalidUsernamePasswordException,
+    NameTakenException
+)
 from app.resources.strings import APIResponseMessage
 
 
@@ -14,78 +19,85 @@ class UserService:
     Methods related to the user.
     """
 
+    # CRUD
     @classmethod
-    async def check_username_is_taken(cls, username):
+    async def validate_username_taken(cls, username):
         user = await cls.get_by_username(username)
         if user:
-            return True
-        return False
+            raise NameTakenException
 
-    
-    # CRUD
     @staticmethod
     async def create_user(user_create):
         # hash password
         user_create.hashed_password = get_password_hash(user_create.hashed_password)
-        
+
         # add to db
         user = User(**user_create.dict(exclude_unset=True))
         await user.save()
         return await User_Pydantic.from_tortoise_orm(user)
 
-    
     @staticmethod
     async def get_user_by_id(id: str):
         user = await User.get_or_none(id=id)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=APIResponseMessage.ITEM_NOT_FOUND,
-            )
+            raise ItemNotFoundException
         return await User_Pydantic.from_tortoise_orm(user)
 
-    
-    # User Authentication
     @staticmethod
     async def get_by_username(username: str):
         return await User.get_or_none(username=username)
-    
 
-    @classmethod    
+    # USER AUTHENTICATION
+    @classmethod
     async def authenticate(cls, username: str, password: str):
         user = await cls.get_by_username(username)
         if not user:
-            return None
+            raise InvalidUsernamePasswordException
         if not verify_password(password, user.hashed_password):
-            return None
+            raise InvalidUsernamePasswordException
         return user
-    
 
     @staticmethod
-    def is_active(user: User_Pydantic):
-        return user.status == Status.ACTIVE
-    
-    
-    # User Authorization
+    def validate_is_active(user: User_Pydantic) -> None:
+        if not user.status == Status.ACTIVE:
+            raise InactiveUserException
+
+    # USER AUTHORIZATION
     @staticmethod
     async def validate_req_scopes(
-        req_scopes: str, user_scopes: dict,
+        req_scopes: str,
+        user_scopes: dict,
     ) -> bool:
-        
+
         if user_scopes:
             if req_scopes in user_scopes:
                 return True
             return False
         return False
-    
 
     @staticmethod
     async def validate_onetime_scopes(
-        req_scopes: str, onetime_scopes: dict,
+        req_scopes: str,
+        onetime_scopes: dict,
     ) -> bool:
-        
+
         if onetime_scopes:
             if req_scopes in onetime_scopes:
                 return True
             return False
         return False
+
+    @classmethod
+    async def validate_scopes(
+        cls,
+        req_scopes: str,
+        user: User_Pydantic,
+    ) -> None:
+
+        scopes = await cls.validate_req_scopes(req_scopes, user.scopes)
+        onetime_scopes = await cls.validate_onetime_scopes(
+            req_scopes, user.onetime_scopes
+        )
+
+        if not scopes and not onetime_scopes:
+            raise InsufficientPermissionsException

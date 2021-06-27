@@ -7,31 +7,47 @@ settings = get_settings()
 
 
 def test_create_category(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
     )
 
     assert response.status_code == 201
     assert response.json()["name"] == fake_name
 
 
-def test_create_category_name_taken(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+def test_create_category_no_permission(test_app_with_db, test_jwt_token_no_scopes):
+    access_token = test_jwt_token_no_scopes["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
+    )
+
+    assert response.status_code == 403
+    assert response.json() == {"detail": APIResponseMessage.InsufficientPermissions}
+
+
+def test_create_category_name_taken(test_app_with_db, test_jwt_token):
+    access_token = test_jwt_token["access_token"]  # jwt access token
+    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
+
+    response = test_app_with_db.post(
+        f"{settings.API_V1_STR}/category/",
+        headers={
+            "Authorization": f"{access_token['token_type']} {access_token['token']}"
+        },
+        json={"name": fake_name},
     )
     category_name = response.json()["name"]
 
@@ -40,7 +56,7 @@ def test_create_category_name_taken(test_app_with_db, test_jwt_token):
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": category_name}
+        json={"name": category_name},
     )
 
     assert response.status_code == 400
@@ -48,15 +64,15 @@ def test_create_category_name_taken(test_app_with_db, test_jwt_token):
 
 
 def test_get_categories(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
     )
     category_id = response.json()["id"]
 
@@ -69,7 +85,7 @@ def test_get_categories(test_app_with_db, test_jwt_token):
 
 
 def test_get_category_single(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
@@ -77,7 +93,7 @@ def test_get_category_single(test_app_with_db, test_jwt_token):
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
     )
     category_id = response.json()["id"]
 
@@ -88,7 +104,9 @@ def test_get_category_single(test_app_with_db, test_jwt_token):
 
 
 def test_get_category_incorrect_id(test_app_with_db):
-    response = test_app_with_db.get(f"{settings.API_V1_STR}/category/83d53aa8-47b0-4e23-8015-3b26d2c841de")
+    response = test_app_with_db.get(
+        f"{settings.API_V1_STR}/category/83d53aa8-47b0-4e23-8015-3b26d2c841de"
+    )
 
     assert response.status_code == 404
     assert response.json() == {"detail": APIResponseMessage.ITEM_NOT_FOUND_IN_DB}
@@ -100,7 +118,7 @@ def test_get_category_incorrect_id(test_app_with_db):
 
 
 def test_update_category(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
     fake_name2 = "Test_" + Faker().color_name() + Faker().first_name()
 
@@ -109,7 +127,7 @@ def test_update_category(test_app_with_db, test_jwt_token):
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
     )
     category_id = response.json()["id"]
 
@@ -118,7 +136,7 @@ def test_update_category(test_app_with_db, test_jwt_token):
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name2}
+        json={"name": fake_name2},
     )
 
     assert response.status_code == 200
@@ -126,15 +144,15 @@ def test_update_category(test_app_with_db, test_jwt_token):
 
 
 def test_update_category_incorrect_id(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     response = test_app_with_db.put(
         f"{settings.API_V1_STR}/category/83d53aa8-47b0-4e23-8015-3b26d2c841de",
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
     )
 
     assert response.status_code == 404
@@ -145,17 +163,17 @@ def test_update_category_incorrect_id(test_app_with_db, test_jwt_token):
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": fake_name}
+        json={"name": fake_name},
     )
-    
+
     assert response.status_code == 400
     assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
 
 
 def test_update_category_name_taken(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     # create a category
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -183,7 +201,7 @@ def test_update_category_name_taken(test_app_with_db, test_jwt_token):
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
         },
-        json={"name": category_name}
+        json={"name": category_name},
     )
 
     assert response.status_code == 400
@@ -191,9 +209,9 @@ def test_update_category_name_taken(test_app_with_db, test_jwt_token):
 
 
 def test_delete_category(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
+    access_token = test_jwt_token["access_token"]  # jwt access token
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     # create category
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -220,13 +238,13 @@ def test_delete_category(test_app_with_db, test_jwt_token):
 
 
 def test_delete_category_incorrect_id(test_app_with_db, test_jwt_token):
-    access_token = test_jwt_token['access_token'] # jwt access token
-    
+    access_token = test_jwt_token["access_token"]  # jwt access token
+
     response = test_app_with_db.delete(
         f"{settings.API_V1_STR}/category/83d53aa8-47b0-4e23-8026-3c26b2c841de",
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
-        }
+        },
     )
 
     assert response.status_code == 404
@@ -236,7 +254,7 @@ def test_delete_category_incorrect_id(test_app_with_db, test_jwt_token):
         f"{settings.API_V1_STR}/category/a22",
         headers={
             "Authorization": f"{access_token['token_type']} {access_token['token']}"
-        }
+        },
     )
 
     assert response.status_code == 400

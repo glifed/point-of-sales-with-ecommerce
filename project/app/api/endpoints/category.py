@@ -1,20 +1,19 @@
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, Depends, Security, status
 from tortoise.exceptions import DoesNotExist, OperationalError
 
-from app.api.dependencies import get_current_active_user
-from app.models.schema.category import (ResponseCategory,
-                                        ResponseCategoryListPaginated)
-from app.models.schema.schemas import (
-    CategoryIn_Pydantic,
-    CustomResponse,
-    User_Pydantic
-)
+from app.api.dependencies import get_valid_permissions_user
+from app.models.schema.category import ResponseCategory, ResponseCategoryListPaginated
+from app.models.schema.schemas import CategoryIn_Pydantic, CustomResponse, User_Pydantic
 from app.models.schema.security import Action, Model
+from app.resources.exceptions import (
+    ErrorSavingItemException,
+    InvalidIdException,
+    ItemNotFoundException,
+)
 from app.resources.strings import APIResponseMessage
 from app.services.category import CategoryService
-
 
 router = APIRouter()
 
@@ -24,14 +23,13 @@ async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
     """
     Get all categories.
     """
+
     try:
         all_category = await CategoryService.get_all_categories_paginated(skip, limit)
-    
+
     except DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=APIResponseMessage.ITEM_NOT_FOUND_IN_DB
-        )
-    
+        raise ItemNotFoundException
+
     return all_category
 
 
@@ -44,92 +42,80 @@ async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
 async def create_category(
     category_create: CategoryIn_Pydantic,
     current_user: User_Pydantic = Security(
-        get_current_active_user,
+        get_valid_permissions_user,
         scopes=[f"{Model.CATEGORY}:{Action.CREATE}"],
-    )
+    ),
 ) -> Any:
     """
     Create a new category.
     """
-    if await CategoryService.check_categoryname_is_taken(category_create.name):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=APIResponseMessage.NAME_TAKEN
-        )
+
+    await CategoryService.validate_name_taken(category_create.name)
     try:
         category_obj = await CategoryService.create_category(category_create)
-        cat_dict = category_obj.dict()
 
     except OperationalError:
-        HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=APIResponseMessage.ERROR_IN_SAVING_ITEM
-        )
-    
-    return ResponseCategory(**cat_dict)
+        raise ErrorSavingItemException
+
+    return ResponseCategory(**category_obj.dict())
 
 
-@router.put("/{id}", name="Category:Update Category", response_model=ResponseCategory)
+@router.put("/{id}", name="Category:Update", response_model=ResponseCategory)
 async def update_category(
     id: str,
     category_update: CategoryIn_Pydantic,
-    current_user: User_Pydantic = Depends(get_current_active_user),
+    current_user: User_Pydantic = Depends(get_valid_permissions_user),
 ):
-    if await CategoryService.check_categoryname_is_taken(category_update.name):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=APIResponseMessage.NAME_TAKEN
-        )
+    """
+    Update a category.
+    """
+
+    await CategoryService.validate_name_taken(category_update.name)
+
     try:
         updated_category = await CategoryService.update_category(id, category_update)
-    
+
     except DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=APIResponseMessage.ITEM_NOT_FOUND_IN_DB
-        )
+        raise ItemNotFoundException
     except OperationalError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=APIResponseMessage.INVALID_UUID
-        )
-    
+        raise InvalidIdException
+
     return ResponseCategory(**updated_category.dict())
 
 
-@router.get(
-    "/{id}", name="Category:Get Category by ID", response_model=ResponseCategory
-)
+@router.get("/{id}", name="Category:Get by ID", response_model=ResponseCategory)
 async def get_specific_category(id: str):
+    """
+    Get category by ID.
+    """
+
     try:
         category = await CategoryService.get_category_by_id(id)
-    
+
     except DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=APIResponseMessage.ITEM_NOT_FOUND_IN_DB
-        )
+        raise ItemNotFoundException
     except OperationalError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=APIResponseMessage.INVALID_UUID
-        )
-    
+        raise InvalidIdException
+
     return ResponseCategory(**category.dict())
 
 
-@router.delete("/{id}", response_model=CustomResponse)
+@router.delete("/{id}", name="Category:Delete", response_model=CustomResponse)
 async def delete_category(
     id: str,
-    current_user: User_Pydantic = Depends(get_current_active_user),
-):
+    current_user: User_Pydantic = Depends(get_valid_permissions_user),
+) -> Any:
+    """
+    Delete a category.
+    """
     try:
         deleted = await CategoryService.delete_category(id)
         if not deleted:
             raise DoesNotExist
 
     except DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=APIResponseMessage.ITEM_NOT_FOUND_IN_DB
-        )
+        raise ItemNotFoundException
     except OperationalError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=APIResponseMessage.INVALID_UUID
-        )
-    
+        raise InvalidIdException
+
     return CustomResponse(detail=APIResponseMessage.ITEM_DELETED_SUCCESSFULLY)

@@ -1,7 +1,11 @@
 from app.models.domain.category import Category
 from app.models.schema.category import ResponseCategoryListPaginated
-from app.models.schema.schemas import (Category_List_Pydantic,
-                                       Category_Pydantic, CategoryIn_Pydantic)
+from app.models.schema.schemas import (
+    Category_List_Pydantic,
+    Category_Pydantic,
+    CategoryIn_Pydantic,
+)
+from app.resources.exceptions import NameTakenException
 
 
 class CategoryService:
@@ -12,11 +16,10 @@ class CategoryService:
         return await Category_Pydantic.from_tortoise_orm(category)
 
     @staticmethod
-    async def check_categoryname_is_taken(name: str):
+    async def validate_name_taken(name: str) -> None:
         category = await Category.get_or_none(name=name)
         if category:
-            return True
-        return False
+            raise NameTakenException
 
     @staticmethod
     async def get_all_categories():

@@ -3,6 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 
+
 # Permissions
 class Action(str, Enum):
     CREATE = "Create"
@@ -19,8 +20,7 @@ class Model(str, Enum):
 
 
 class Permission(BaseModel):
-    model: Model
-    action: Action
+    permission: str
     detail: str
 
 

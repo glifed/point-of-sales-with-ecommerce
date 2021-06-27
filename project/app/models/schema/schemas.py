@@ -4,26 +4,25 @@ from uuid import UUID
 
 from pydantic import BaseModel, validator
 from tortoise import Tortoise
-from tortoise.contrib.pydantic import (pydantic_model_creator,
-                                       pydantic_queryset_creator)
+from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
 
 from app.models.domain.base import Status
 from app.models.domain.category import Category
 from app.models.domain.user import User
 
-
-Tortoise.init_models([
-    "models.domain.category",
-    "models.domain.user",
-], "models")
+Tortoise.init_models(
+    [
+        "models.domain.category",
+        "models.domain.user",
+    ],
+    "models",
+)
 
 
 # pydantic schemas
 User_Pydantic = pydantic_model_creator(User, name="User")
 User_List_Pydantic = pydantic_queryset_creator(User)
-UserIn_Pydantic = pydantic_model_creator(
-    User, name="UserIn", exclude_readonly=True
-)
+UserIn_Pydantic = pydantic_model_creator(User, name="UserIn", exclude_readonly=True)
 
 Category_Pydantic = pydantic_model_creator(Category, name="Category")
 Category_List_Pydantic = pydantic_queryset_creator(Category)

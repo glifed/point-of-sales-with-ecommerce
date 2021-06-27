@@ -10,14 +10,14 @@ def test_password_hash_functionality():
     """
     Test password hash generator.
     """
-    
+
     password = "Test_" + Faker().color_name() + Faker().first_name()
     another_password = "Test_" + Faker().color_name() + Faker().first_name()
-    
+
     password_hash = get_password_hash(password)
 
-    assert verify_password(password, password_hash) == True
-    assert verify_password(another_password, password_hash) == False
+    assert verify_password(password, password_hash) is True
+    assert verify_password(another_password, password_hash) is False
 
 
 def test_token_generation_route(test_app_with_db):
@@ -31,18 +31,18 @@ def test_token_generation_route(test_app_with_db):
             "username": fake_name,
             "hashed_password": fake_name,
             "full_name": fake_name,
-            "cedula": Faker().isbn10(separator=''),
+            "cedula": Faker().isbn10(separator=""),
             "sueldo": 0,
-            "comision": 0
-        }
+            "comision": 0,
+        },
     )
 
     response = test_app_with_db.post(
         url=f"{settings.API_V1_STR}/login",
-        data={"username": fake_name, "password":fake_name},
+        data={"username": fake_name, "password": fake_name},
     )
     tokens = response.json()
-    
+
     assert response.status_code == 200
     assert "access_token" in tokens
     assert "refresh_token" in tokens

@@ -1,7 +1,12 @@
 from tortoise import fields
 
-from app.models.domain.base import (AbstractBaseModel, ItemTypeMixin,
-                                    NameMixin, StatusMixin, TimestampMixin)
+from app.models.domain.base import (
+    AbstractBaseModel,
+    ItemTypeMixin,
+    NameMixin,
+    StatusMixin,
+    TimestampMixin,
+)
 
 
 class Product(AbstractBaseModel, NameMixin, TimestampMixin, StatusMixin, ItemTypeMixin):

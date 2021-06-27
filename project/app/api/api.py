@@ -1,12 +1,7 @@
 from fastapi import APIRouter
 
+from app.api.endpoints import category, login, ping, user
 from app.core.config import get_settings
-from app.api.endpoints import (
-    category,
-    login,
-    user,
-    ping
-)
 
 settings = get_settings()
 

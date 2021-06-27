@@ -7,7 +7,7 @@ class APIResponseMessage(str, Enum):
     for communicating status of the request made
     by the API user.
     """
-    
+
     # Success messages
     ITEM_DELETED_SUCCESSFULLY = "Elemento eliminado correctamente."
 
@@ -22,4 +22,6 @@ class APIResponseMessage(str, Enum):
     # Authentication & Authorization messages
     INVALID_USERNAME_PASSWORD = "Usuario o contraseña incorrecto."
     INACTIVE_USER = "Su usuario está inactivo. Comuníquese con su administrador."
-    NOT_ENOUGH_PERMISSIONS = "No contiene permisos suficientes para acceder a este recurso."
+    InsufficientPermissions = (
+        "No contiene permisos suficientes para acceder a este recurso."
+    )

@@ -47,6 +47,6 @@ class AbstractUserMixin(AbstractBaseModel, TimestampMixin, StatusMixin):
 
     def __str__(self):
         return f"<User: {self.username}>"
-    
+
     class Meta:
         abstract = True
