@@ -3,4 +3,4 @@ __pycache__*
 .pytest_cache*
 .vscode*
 htmlcov*
-project/backoffice-service/.coverage
+project/backoffice-api/.coverage
