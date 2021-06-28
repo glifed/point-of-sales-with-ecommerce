@@ -1,18 +1,31 @@
 version: '3'
 
 services:
-    web-api:
-        build: ./project
-        image: miguelalb/backendapi-joelcel
+    backoffice-api:
+        build: ./project/backoffice-service
+        image: miguelalb/backoffice-joelcel
         command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8001
         volumes:
-            - ./project:/usr/src/app
+            - ./project/backoffice-service:/usr/src/app
         ports:
             - 8005:8001
         env_file:
-            - ./project/app/core/.env
+            - ./project/backoffice-service/app/core/.env
         depends_on:
             - web-db
+    
+    # ecommerce-api:
+    #     build: ./project/ecommerce-service
+    #     image: miguelalb/ecommerce-joelcel
+    #     command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8002
+    #     volumes:
+    #         - ./project/ecommerce-service:/usr/src/app
+    #     ports:
+    #         - 8006:8002
+    #     env_file:
+    #         - ./project/ecommerce-service/app/core/.env
+    #     depends_on:
+    #         - web-db
     
     web-db:
         build:
