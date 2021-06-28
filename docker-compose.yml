@@ -1,37 +1,10 @@
 version: '3'
 
 services:
-    backoffice-api:
-        build: ./project/backoffice-service
-        image: miguelalb/backoffice-joelcel
-        command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8001
-        volumes:
-            - ./project/backoffice-service:/usr/src/app
-        ports:
-            - 8005:8001
-        env_file:
-            - ./project/backoffice-service/app/core/.env
-        depends_on:
-            - web-db
-    
-    # ecommerce-api:
-    #     build: ./project/ecommerce-service
-    #     image: miguelalb/ecommerce-joelcel
-    #     command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8002
-    #     volumes:
-    #         - ./project/ecommerce-service:/usr/src/app
-    #     ports:
-    #         - 8006:8002
-    #     env_file:
-    #         - ./project/ecommerce-service/app/core/.env
-    #     depends_on:
-    #         - web-db
-    
     web-db:
-        build:
-            context: ./project/db
-            dockerfile: Dockerfile
+        build: ./project/db
         image: miguelalb/backendapi-db
+        container_name: web-db
         expose:
             - 5432
         env_file:
@@ -45,3 +18,50 @@ services:
             - ./project/db/.env
         depends_on: 
             - web-db
+
+    backoffice-api:
+        build: ./project/backoffice-api
+        image: miguelalb/backoffice-joelcel
+        container_name: backoffice-api
+        command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8001
+        volumes:
+            - ./project/backoffice-api:/usr/src/app
+        ports:
+            - 8005:8001
+        env_file:
+            - ./project/backoffice-api/app/core/.env
+        depends_on:
+            - web-db
+
+    ecommerce-api:
+        build: ./project/ecommerce-api
+        image: miguelalb/ecommerce-joelcel
+        container_name: ecommerce-api
+        command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8002
+        volumes:
+            - ./project/ecommerce-api:/usr/src/app
+        ports:
+            - 8006:8002
+        env_file:
+            - ./project/ecommerce-api/app/core/.env
+        depends_on:
+            - web-db
+    
+    backoffice-frontend:
+        build: ./project/backoffice-frontend
+        image: miguelalb/backoffice-joelcel-frontend
+        container_name: frontend-backoffice
+        ports:
+            - 8080:80
+        depends_on:
+            - backoffice-api
+    
+    ecommerce-frontend:
+        build: ./project/ecommerce-frontend
+        image: miguelalb/ecommerce-joelcel-frontend
+        container_name: frontend-ecommerce
+        ports:
+            - 8081:80
+        depends_on: 
+            - ecommerce-api
+        

@@ -10,7 +10,7 @@ from app.db import init_db
 log = logging.getLogger("uvicorn")
 
 
-def create_application() -> FastAPI:  # application factory
+def create_application() -> FastAPI:
     settings = get_settings()
 
     app = FastAPI(title="JoelCelAPI")
