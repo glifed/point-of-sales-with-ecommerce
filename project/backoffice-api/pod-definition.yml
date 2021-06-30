@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backoffice-api
+  labels:
+    app: backoffice-api
+    type: backend
+spec:
+  containers:
+    - name: backoffice-api-container
+      image: miguelalb/backoffice-api
