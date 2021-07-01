@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: database
+  labels:
+    tier: database
+    group: backend
+spec:
+  containers:
+    - name: postgres
+      image: miguelalb/posdb

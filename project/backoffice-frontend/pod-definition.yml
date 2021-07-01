@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backoffice-frontend
+  labels:
+    tier: backoffice-tier
+    group: frontend
+spec:
+  containers:
+    - name: backoffice-frontend
+      image: miguelalb/backoffice-frontend

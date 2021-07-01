@@ -3,9 +3,9 @@ kind: Pod
 metadata:
   name: backoffice-api
   labels:
-    app: backoffice-api
-    type: backend
+    tier: backoffice-tier
+    group: backend
 spec:
   containers:
-    - name: backoffice-api-container
+    - name: backoffice-api
       image: miguelalb/backoffice-api
