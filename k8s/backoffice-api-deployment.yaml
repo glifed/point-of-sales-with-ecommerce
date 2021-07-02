@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\macevedo\kompose.exe convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: backoffice-api
+  name: backoffice-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: backoffice-api
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Users\macevedo\kompose.exe convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: backoffice-api
+    spec:
+      containers:
+      - args:
+        - uvicorn
+        - app.main:app
+        - --reload
+        - --workers
+        - "1"
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8001"
+        env:
+        - name: ACCESS_TOKEN_EXPIRE_MINUTES
+          valueFrom:
+            configMapKeyRef:
+              key: ACCESS_TOKEN_EXPIRE_MINUTES
+              name: backoffice-api-env
+        - name: BACKEND_CORS_ORIGINS
+          valueFrom:
+            configMapKeyRef:
+              key: BACKEND_CORS_ORIGINS
+              name: backoffice-api-env
+        - name: DATABASE_TEST_URL
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_TEST_URL
+              name: backoffice-api-env
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_URL
+              name: backoffice-api-env
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              key: ENVIRONMENT
+              name: backoffice-api-env
+        - name: PYTHONPATH
+          valueFrom:
+            configMapKeyRef:
+              key: PYTHONPATH
+              name: backoffice-api-env
+        - name: REFRESH_TOKEN_EXPIRE_MINUTES
+          valueFrom:
+            configMapKeyRef:
+              key: REFRESH_TOKEN_EXPIRE_MINUTES
+              name: backoffice-api-env
+        - name: SECRET_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: SECRET_KEY
+              name: backoffice-api-env
+        - name: TESTING
+          valueFrom:
+            configMapKeyRef:
+              key: TESTING
+              name: backoffice-api-env
+        image: miguelalb/backoffice-joelcel
+        imagePullPolicy: ""
+        name: backoffice-api
+        ports:
+        - containerPort: 8001
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
