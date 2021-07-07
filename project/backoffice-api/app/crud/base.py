@@ -11,7 +11,7 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType]):
+    def __init__(self, model: ModelType):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
         This object abstracts away the implementation of these methods to higher
@@ -29,8 +29,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def get_all(
         self,
-        skip: int = 0,
-        limit: int = 100
+        skip: int,
+        limit: int,
     ) -> List[ModelType]:
         return await self.model.all().offset(skip).limit(limit)
 

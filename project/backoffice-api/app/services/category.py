@@ -1,4 +1,4 @@
-from app.crud.crud_category import category
+from app.crud.crud_category import category_crud
 from app.models.domain.category import Category
 from app.models.schema.category import ResponseCategoryListPaginated
 from app.models.schema.schemas import (
@@ -29,12 +29,13 @@ class CategoryService:
 
     @staticmethod
     async def get_all_categories_paginated(skip: int = 0, limit: int = 100):
-        category_obj = await Category_List_Pydantic.from_queryset(
-            category.get_all(skip=skip, limit=limit)
+        categories_obj = await Category_List_Pydantic.from_queryset(
+            await category_crud.get_all(skip=skip, limit=limit)
         )
-        count = await category.get_count()
+        
+        count = await category_crud.get_count()
         return ResponseCategoryListPaginated(
-            categories=category_obj.dict()["__root__"], total=count
+            categories=categories_obj.dict()["__root__"], total=count
         )
 
     @staticmethod
