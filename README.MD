@@ -1,5 +1,5 @@
 ## POS Web Application with Online Store
-
+__Work in progress...__
 Point of Sales system with E-Commerce capabilities built using a microservices arquitecture composed of 5 services:
  - A Vue JS Single Page Application containing the UI and frontend functionality for the backoffice. **__[Here's a video demo!](https://vimeo.com/563416580).__**
  - An Async Restful API built with FastAPI that serves as a controller for the backoffice. 
