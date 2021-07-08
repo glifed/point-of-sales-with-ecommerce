@@ -24,15 +24,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         self.model = model
 
-    async def get(self, id: Any) -> Optional[ModelType]:
-        return await self.model.get(id=id)
+    def get_by_id(self, id: Any) -> Optional[ModelType]:
+        return self.model.get(id=id)
 
-    async def get_all(
+    def get_all(
         self,
         skip: int,
         limit: int,
     ) -> List[ModelType]:
-        return await self.model.all().offset(skip).limit(limit)
+        return self.model.all().offset(skip).limit(limit)
 
     async def get_count(self) -> int:
         return await self.model.all().count()
