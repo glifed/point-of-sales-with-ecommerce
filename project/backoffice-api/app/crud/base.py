@@ -1,6 +1,5 @@
 from typing import Any, Generic, List, Optional, Type, TypeVar
 
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
 from app.models.domain.base import AbstractBaseModel
