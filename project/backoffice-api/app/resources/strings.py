@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class APIResponseMessage(str, Enum):
-    """User-Friendly API response messages.
+    """User-Friendly API response messages enumerable.
     These messages are consumed by front-end,
     for communicating status of the request made
     by the API user.
