@@ -8,6 +8,8 @@ from app.models.schema.user import ResponseUser
 from app.resources.exceptions import ErrorSavingItemException
 from app.services.user import UserService
 
+user_service = UserService()
+
 router = APIRouter()
 
 
@@ -21,10 +23,10 @@ async def create_user(user_create: UserIn_Pydantic) -> Any:
     """
     Create new user.
     """
-    await UserService.validate_username_taken(user_create.username)
-    
+    await user_service.validate_username_taken(user_create.username)
+
     try:
-        user_obj = await UserService.create_user(user_create)
+        user_obj = await user_service.create_user(user_create)
         user_dict = user_obj.dict()
     except OperationalError:
         ErrorSavingItemException

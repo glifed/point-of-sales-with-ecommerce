@@ -16,15 +16,14 @@ class CategoryService:
             raise NameTakenException
 
     async def create_category(self, category_create):
-        category = Category(**category_create.dict())
-        await category.save()
+        category = await category_crud.create(category_create)
         return await Category_Pydantic.from_tortoise_orm(category)
 
     async def get_all_categories_paginated(self, skip: int = 0, limit: int = 100):
         categories_obj = await Category_List_Pydantic.from_queryset(
             category_crud.get_all(skip=skip, limit=limit)
         )
-        
+
         count = await category_crud.get_count()
         return ResponseCategoryListPaginated(
             categories=categories_obj.dict()["__root__"], total=count
@@ -35,11 +34,11 @@ class CategoryService:
         return await Category_Pydantic.from_tortoise_orm(category)
 
     async def update_category(self, id: str, category: CategoryIn_Pydantic):
-        await Category.filter(id=id).update(**category.dict(exclude_unset=True))
+        await category_crud.update(id, category)
         return await self.get_category_by_id(id)
 
     async def delete_category(self, id: str):
-        deleted_count = await Category.filter(id=id).delete()
+        deleted_count = await category_crud.delete(id)
         if not deleted_count:
             return False
         return True

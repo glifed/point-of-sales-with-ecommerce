@@ -9,7 +9,7 @@ from app.resources.exceptions import (
     InsufficientPermissionsException,
     ItemNotFoundException,
     InvalidUsernamePasswordException,
-    NameTakenException
+    NameTakenException,
 )
 from app.resources.strings import APIResponseMessage
 
@@ -20,9 +20,9 @@ class UserService:
     """
 
     # CRUD
-    @classmethod
-    async def validate_username_taken(cls, username):
-        user = await cls.get_by_username(username)
+    
+    async def validate_username_taken(self, username):
+        user = await self.get_by_username(username)
         if user:
             raise NameTakenException
 
@@ -48,9 +48,9 @@ class UserService:
         return await User.get_or_none(username=username)
 
     # USER AUTHENTICATION
-    @classmethod
-    async def authenticate(cls, username: str, password: str):
-        user = await cls.get_by_username(username)
+    
+    async def authenticate(self, username: str, password: str):
+        user = await self.get_by_username(username)
         if not user:
             raise InvalidUsernamePasswordException
         if not verify_password(password, user.hashed_password):
@@ -87,15 +87,15 @@ class UserService:
             return False
         return False
 
-    @classmethod
+    
     async def validate_scopes(
-        cls,
+        self,
         req_scopes: str,
         user: User_Pydantic,
     ) -> None:
 
-        scopes = await cls.validate_req_scopes(req_scopes, user.scopes)
-        onetime_scopes = await cls.validate_onetime_scopes(
+        scopes = await self.validate_req_scopes(req_scopes, user.scopes)
+        onetime_scopes = await self.validate_onetime_scopes(
             req_scopes, user.onetime_scopes
         )
 

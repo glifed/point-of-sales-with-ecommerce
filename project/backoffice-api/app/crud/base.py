@@ -1,5 +1,6 @@
-from typing import Any, Generic, List, Optional, Type, TypeVar
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
 from app.models.domain.base import AbstractBaseModel
@@ -25,7 +26,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def filter_by_query(self, **kwargs) -> Optional[ModelType]:
         return self.model.get(**kwargs)
-    
+
     def filter_or_none(self, **kwargs) -> Optional[ModelType]:
         return self.model.get_or_none(**kwargs)
 
@@ -38,15 +39,19 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def get_count(self) -> int:
         return await self.model.all().count()
-    
-    def create(self):
-        pass
 
-    def update(self):
-        pass
+    def create(self, obj_in: CreateSchemaType) -> ModelType:
+        obj_in_data = jsonable_encoder(obj_in)
+        return self.model.create(**obj_in_data)
 
-    def delete(self):
-        pass
+    def update(
+        self, id: str, obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+    ) -> ModelType:
+        obj_in_data = jsonable_encoder(obj_in)
+        return self.model.filter(id=id).update(**obj_in_data)
+
+    def delete(self, id: str) -> ModelType:
+        return self.model.filter(id=id).delete()
 
 
 class CRUDRelationsBase(CRUDBase):
@@ -61,10 +66,9 @@ class CRUDRelationsBase(CRUDBase):
         """
         self.model = model
         self.related_model = related_model
-    
+
     def get_related(self):
         pass
 
     def add_related(self):
         pass
-    

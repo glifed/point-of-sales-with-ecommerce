@@ -18,6 +18,7 @@ from app.services.category import CategoryService
 router = APIRouter()
 category_service = CategoryService()
 
+
 @router.get("/", name="Category:All", response_model=ResponseCategoryListPaginated)
 async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
     """

@@ -44,6 +44,7 @@ class AbstractUserMixin(AbstractBaseModel, TimestampMixin, StatusMixin):
     hashed_password = fields.CharField(max_length=128, null=False)
     scopes = fields.JSONField(null=True)
     onetime_scopes = fields.JSONField(null=True)
+    is_superuser = fields.BooleanField(default=False)
 
     def __str__(self):
         return f"<User: {self.username}>"

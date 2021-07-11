@@ -6,6 +6,7 @@ from app.services.security import TokenService
 from app.services.user import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
+user_service = UserService()
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User_Pydantic:
@@ -15,7 +16,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User_Pydantic
 
     token_data = TokenService.validate_token(token)
 
-    return await UserService.get_user_by_id(id=token_data.sub)
+    return await user_service.get_user_by_id(id=token_data.sub)
 
 
 async def get_current_active_user(
@@ -25,7 +26,7 @@ async def get_current_active_user(
     Validate current user is active.
     """
 
-    UserService.validate_is_active(current_user)
+    user_service.validate_is_active(current_user)
 
     return current_user
 
@@ -38,10 +39,11 @@ async def get_valid_permissions_user(
     Validate Current user has required scopes (Permissions).
     """
 
-    if security_scopes.scopes:
-        await UserService.validate_scopes(
-            req_scopes=security_scopes.scope_str,
-            user=current_user,
-        )
+    if not current_user.is_superuser:
+        if security_scopes.scopes:
+            await user_service.validate_scopes(
+                req_scopes=security_scopes.scope_str,
+                user=current_user,
+            )
 
     return current_user

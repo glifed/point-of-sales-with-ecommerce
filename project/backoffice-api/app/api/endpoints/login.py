@@ -10,6 +10,8 @@ from app.services.user import UserService
 
 settings = get_settings()
 
+user_service = UserService()
+
 router = APIRouter()
 
 
@@ -19,8 +21,8 @@ async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -
     OAuth2 compatible login, get tokens for future requests.
     """
 
-    user = await UserService.authenticate(form_data.username, form_data.password)
-    UserService.validate_is_active(user)
+    user = await user_service.authenticate(form_data.username, form_data.password)
+    user_service.validate_is_active(user)
     access_token, refresh_token = TokenService.create_tokens(user)
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
