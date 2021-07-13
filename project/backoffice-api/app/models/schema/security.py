@@ -16,7 +16,7 @@ class Action(str, Enum):
 class Model(str, Enum):
     USER = "User"
     CATEGORY = "Category"
-    PRODUCT = "Product"
+    ITEM = "Item"
 
 
 class Permission(BaseModel):

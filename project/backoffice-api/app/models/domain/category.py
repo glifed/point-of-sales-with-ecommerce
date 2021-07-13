@@ -8,4 +8,4 @@ class Category(AbstractBaseModel, TimestampMixin, NameMixin):
     class Meta:
         table = "category"
         default_related_name = "categories"
-        table_description = "Product categories."
+        table_description = "Item categories."
