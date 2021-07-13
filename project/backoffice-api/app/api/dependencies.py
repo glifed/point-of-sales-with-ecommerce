@@ -3,10 +3,11 @@ from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 
 from app.models.schema.schemas import User_Pydantic
 from app.services.security import TokenService
-from app.services.user import UserService
+from app.services.user import UserAuthService, UserCRUDService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
-user_service = UserService()
+user_auth_service = UserAuthService()
+user_crud_service = UserCRUDService()
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User_Pydantic:
@@ -16,7 +17,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User_Pydantic
 
     token_data = TokenService.validate_token(token)
 
-    return await user_service.get_user_by_id(id=token_data.sub)
+    return await user_crud_service.get_user_by_id(id=token_data.sub)
 
 
 async def get_current_active_user(
@@ -26,7 +27,7 @@ async def get_current_active_user(
     Validate current user is active.
     """
 
-    user_service.validate_is_active(current_user)
+    user_auth_service.validate_is_active(current_user)
 
     return current_user
 
@@ -41,7 +42,7 @@ async def get_valid_permissions_user(
 
     if not current_user.is_superuser:
         if security_scopes.scopes:
-            await user_service.validate_scopes(
+            await user_auth_service.validate_scopes(
                 req_scopes=security_scopes.scope_str,
                 user=current_user,
             )

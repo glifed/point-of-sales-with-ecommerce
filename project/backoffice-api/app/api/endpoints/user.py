@@ -6,9 +6,9 @@ from tortoise.exceptions import OperationalError
 from app.models.schema.schemas import UserIn_Pydantic
 from app.models.schema.user import ResponseUser
 from app.resources.exceptions import ErrorSavingItemException
-from app.services.user import UserService
+from app.services.user import UserCRUDService
 
-user_service = UserService()
+user_crud_service = UserCRUDService()
 
 router = APIRouter()
 
@@ -23,10 +23,10 @@ async def create_user(user_create: UserIn_Pydantic) -> Any:
     """
     Create new user.
     """
-    await user_service.validate_username_taken(user_create.username)
+    await user_crud_service.validate_username_taken(user_create.username)
 
     try:
-        user_obj = await user_service.create_user(user_create)
+        user_obj = await user_crud_service.create_user(user_create)
         user_dict = user_obj.dict()
     except OperationalError:
         ErrorSavingItemException

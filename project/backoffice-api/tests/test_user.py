@@ -5,8 +5,7 @@ from app.core.config import get_settings
 settings = get_settings()
 
 
-def test_create_user(test_app_with_db):
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
+def test_create_user(test_app_with_db, fake_name):
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/user/",
         json={

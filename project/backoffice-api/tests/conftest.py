@@ -99,3 +99,8 @@ def test_jwt_token_no_scopes(test_app_with_db) -> Any:
     tokens = response.json()  # Access and Refresh tokens
 
     return tokens
+
+
+@pytest.fixture(scope="function")
+def fake_name():
+    return "Test_" + Faker().color_name() + Faker().first_name()

@@ -6,9 +6,8 @@ from app.resources.strings import APIResponseMessage
 settings = get_settings()
 
 
-def test_create_category(test_app_with_db, test_jwt_token):
+def test_create_category(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -22,9 +21,10 @@ def test_create_category(test_app_with_db, test_jwt_token):
     assert response.json()["name"] == fake_name
 
 
-def test_create_category_no_permission(test_app_with_db, test_jwt_token_no_scopes):
+def test_create_category_no_permission(
+    test_app_with_db, test_jwt_token_no_scopes, fake_name
+):
     access_token = test_jwt_token_no_scopes["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -38,9 +38,8 @@ def test_create_category_no_permission(test_app_with_db, test_jwt_token_no_scope
     assert response.json() == {"detail": APIResponseMessage.InsufficientPermissions}
 
 
-def test_create_category_name_taken(test_app_with_db, test_jwt_token):
+def test_create_category_name_taken(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -63,9 +62,8 @@ def test_create_category_name_taken(test_app_with_db, test_jwt_token):
     assert response.json() == {"detail": APIResponseMessage.NAME_TAKEN}
 
 
-def test_get_categories(test_app_with_db, test_jwt_token):
+def test_get_categories(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -84,9 +82,8 @@ def test_get_categories(test_app_with_db, test_jwt_token):
     assert len(list(filter(lambda d: d["id"] == category_id, response_list))) == 1
 
 
-def test_get_category_single(test_app_with_db, test_jwt_token):
+def test_get_category_single(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
         f"{settings.API_V1_STR}/category/",
@@ -117,9 +114,9 @@ def test_get_category_incorrect_id(test_app_with_db):
     assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
 
 
-def test_update_category(test_app_with_db, test_jwt_token):
+def test_update_category(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
+
     fake_name2 = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.post(
@@ -143,9 +140,8 @@ def test_update_category(test_app_with_db, test_jwt_token):
     assert response.json() == {"id": category_id, "name": fake_name2}
 
 
-def test_update_category_incorrect_id(test_app_with_db, test_jwt_token):
+def test_update_category_incorrect_id(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     response = test_app_with_db.put(
         f"{settings.API_V1_STR}/category/83d53aa8-47b0-4e23-8015-3b26d2c841de",
@@ -170,9 +166,8 @@ def test_update_category_incorrect_id(test_app_with_db, test_jwt_token):
     assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
 
 
-def test_update_category_name_taken(test_app_with_db, test_jwt_token):
+def test_update_category_name_taken(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     # create a category
     response = test_app_with_db.post(
@@ -208,9 +203,8 @@ def test_update_category_name_taken(test_app_with_db, test_jwt_token):
     assert response.json() == {"detail": APIResponseMessage.NAME_TAKEN}
 
 
-def test_delete_category(test_app_with_db, test_jwt_token):
+def test_delete_category(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
-    fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
     # create category
     response = test_app_with_db.post(
