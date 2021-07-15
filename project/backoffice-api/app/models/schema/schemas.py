@@ -1,19 +1,21 @@
 from decimal import Decimal
-from typing import Optional
+from typing import Any, Optional, List
 from uuid import UUID
 
 from pydantic import BaseModel, validator
 from tortoise import Tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
 
-from app.models.domain.base import Status
+from app.models.domain.base import Status, ItemType
 from app.models.domain.category import Category
 from app.models.domain.user import User
+from app.models.domain.item import Item
 
 Tortoise.init_models(
     [
         "models.domain.category",
         "models.domain.user",
+        "models.domain.item",
     ],
     "models",
 )
@@ -28,6 +30,12 @@ Category_Pydantic = pydantic_model_creator(Category, name="Category")
 Category_List_Pydantic = pydantic_queryset_creator(Category)
 CategoryIn_Pydantic = pydantic_model_creator(
     Category, name="CategoryIn", exclude_readonly=True
+)
+
+Item_Pydantic = pydantic_model_creator(Item, name="Item")
+Item_List_Pydantic = pydantic_queryset_creator(Item)
+ItemIn_Pydantic = pydantic_model_creator(
+    Item, name="ItemIn", exclude_readonly=True
 )
 
 
@@ -65,6 +73,9 @@ class StatusMixin(BaseModel):
     status: Status
 
 
+class NameMixin(BaseModel):
+    name: str
+
 class CategoryBase(BaseModel):
     id: UUID
     name: str
@@ -77,3 +88,25 @@ class UserBase(StatusMixin):
     cedula: str
     sueldo: Decimal
     comision: Decimal
+
+
+class ImageBase(BaseModel):
+    id: Any
+    name: str
+
+
+class ItemBase(StatusMixin):
+    id: UUID
+    sku: str
+    serial_number: str
+    name: str
+    description: str
+    item_type: ItemType
+    images: List[ImageBase]
+    qty: int
+    min_qty: int
+    cost: float
+    margin: float
+    price: float
+    rating: int
+    excento_itbis: bool

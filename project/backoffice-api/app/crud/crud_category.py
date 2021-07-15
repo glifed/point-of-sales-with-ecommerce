@@ -1,4 +1,3 @@
-from typing import List
 
 from app.crud.base import CRUDBase
 from app.models.domain.category import Category

@@ -52,23 +52,3 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def delete(self, id: str) -> ModelType:
         return self.model.filter(id=id).delete()
-
-
-class CRUDRelationsBase(CRUDBase):
-    def __init__(self, model, related_model):
-        """
-        CRUD extended object that adds relationship operations to models.
-        **parameters**
-
-        * `model`: An ORM model class
-        * `related_model`: An ORM model class
-        * `schema`: A Pydantic model (schema) class
-        """
-        self.model = model
-        self.related_model = related_model
-
-    def get_related(self):
-        pass
-
-    def add_related(self):
-        pass

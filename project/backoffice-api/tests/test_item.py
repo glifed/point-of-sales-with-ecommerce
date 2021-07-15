@@ -2,6 +2,11 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
+
+def test_create_item_crud():
+    item_obj = item_crud_service.create()
+    assert item_obj
+
 def test_create_item(test_app_with_db, test_jwt_token, fake_name):
     access_token = test_jwt_token["access_token"]  # jwt access token
     
