@@ -3,8 +3,7 @@ from app.resources.strings import APIResponseMessage
 
 def test_create_category(test_app_with_db, headers, api_domain, fake_name):
     """Test create category endpoint"""
-    
-    
+
     response = test_app_with_db.post(
         f"{api_domain}/category/",
         headers=headers,
@@ -29,7 +28,6 @@ def test_create_category_no_permission(
 
 
 def test_create_category_name_taken(test_app_with_db, headers, api_domain, fake_name):
-    
 
     response = test_app_with_db.post(
         f"{api_domain}/category/",
@@ -49,7 +47,6 @@ def test_create_category_name_taken(test_app_with_db, headers, api_domain, fake_
 
 
 def test_get_categories(test_app_with_db, headers, api_domain, fake_name):
-    
 
     response = test_app_with_db.post(
         f"{api_domain}/category/",
@@ -67,7 +64,6 @@ def test_get_categories(test_app_with_db, headers, api_domain, fake_name):
 
 
 def test_get_category_single(test_app_with_db, headers, api_domain, fake_name):
-    
 
     response = test_app_with_db.post(
         f"{api_domain}/category/",
@@ -97,7 +93,6 @@ def test_get_category_incorrect_id(test_app_with_db, api_domain):
 
 
 def test_update_category(test_app_with_db, headers, api_domain, fake_name, fake_name2):
-    
 
     response = test_app_with_db.post(
         f"{api_domain}/category/",
@@ -117,7 +112,6 @@ def test_update_category(test_app_with_db, headers, api_domain, fake_name, fake_
 
 
 def test_update_category_incorrect_id(test_app_with_db, headers, api_domain, fake_name):
-    
 
     response = test_app_with_db.put(
         f"{api_domain}/category/83d53aa8-47b0-4e23-8015-3b26d2c841de",
@@ -138,8 +132,9 @@ def test_update_category_incorrect_id(test_app_with_db, headers, api_domain, fak
     assert response.json() == {"detail": APIResponseMessage.INVALID_UUID}
 
 
-def test_update_category_name_taken(test_app_with_db, headers, api_domain, fake_name, fake_name2):
-    
+def test_update_category_name_taken(
+    test_app_with_db, headers, api_domain, fake_name, fake_name2
+):
 
     # create a category
     response = test_app_with_db.post(
@@ -169,7 +164,6 @@ def test_update_category_name_taken(test_app_with_db, headers, api_domain, fake_
 
 
 def test_delete_category(test_app_with_db, headers, api_domain, fake_name):
-    
 
     # create category
     response = test_app_with_db.post(
@@ -193,7 +187,6 @@ def test_delete_category(test_app_with_db, headers, api_domain, fake_name):
 
 
 def test_delete_category_incorrect_id(test_app_with_db, api_domain, headers):
-    
 
     response = test_app_with_db.delete(
         f"{api_domain}/category/83d53aa8-47b0-4e23-8026-3c26b2c841de",

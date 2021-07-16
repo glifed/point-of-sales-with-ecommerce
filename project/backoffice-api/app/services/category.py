@@ -15,6 +15,7 @@ class CategoryCRUDService:
     - Update category service.
     - Delete category service.
     """
+
     async def create_category(self, category_create: CategoryIn_Pydantic):
         category = await category_crud.create(category_create)
         return await Category_Pydantic.from_tortoise_orm(category)
@@ -46,6 +47,7 @@ class CategoryCRUDService:
 
 class CategoryValService:
     """Category validators"""
+
     async def validate_name_taken(self, name: str) -> None:
         category = await category_crud.filter_or_none(name=name)
         if category:

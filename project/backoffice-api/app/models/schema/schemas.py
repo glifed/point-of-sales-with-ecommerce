@@ -1,15 +1,15 @@
 from decimal import Decimal
-from typing import Any, Optional, List
+from typing import Any, List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, validator
 from tortoise import Tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
 
-from app.models.domain.base import Status, ItemType
+from app.models.domain.base import ItemType, Status
 from app.models.domain.category import Category
-from app.models.domain.user import User
 from app.models.domain.item import Item
+from app.models.domain.user import User
 
 Tortoise.init_models(
     [

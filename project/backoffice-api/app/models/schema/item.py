@@ -2,11 +2,11 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.models.schema.schemas import CategoryBase
-from app.models.schema.schemas import ItemBase
+from app.models.schema.schemas import CategoryBase, ItemBase
 
 
-class ResponseItemWithCategory(ItemBase):
+class ResponseItemWithCategory(BaseModel):
+    item: ItemBase
     category: CategoryBase
 
 

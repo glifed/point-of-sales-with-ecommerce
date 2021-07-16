@@ -27,7 +27,9 @@ async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
     """
 
     try:
-        all_category = await category_crud_service.get_all_categories_paginated(skip, limit)
+        all_category = await category_crud_service.get_all_categories_paginated(
+            skip, limit
+        )
 
     except DoesNotExist:
         raise ItemNotFoundException
@@ -75,7 +77,9 @@ async def update_category(
     await category_validators.validate_name_taken(category_update.name)
 
     try:
-        updated_category = await category_crud_service.update_category(id, category_update)
+        updated_category = await category_crud_service.update_category(
+            id, category_update
+        )
 
     except DoesNotExist:
         raise ItemNotFoundException

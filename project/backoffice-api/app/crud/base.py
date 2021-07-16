@@ -57,14 +57,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 class CRUDBaseRelated(CRUDBase):
     """Base relations CRUD wrapper. Serves as a gateway to fetch and create
     data that has relationship with other models."""
-    
+
     async def create_with_related(
-        self, 
-        obj_in: CreateSchemaType,
-        related_name: str,
-        related_instance: ModelType
+        self, obj_in: CreateSchemaType, related_name: str, related_instance: ModelType
     ) -> Any:
-        
+
         obj_in_data = jsonable_encoder(obj_in)
         model_obj = self.model(**obj_in_data)
         setattr(model_obj, related_name, related_instance)

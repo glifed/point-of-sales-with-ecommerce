@@ -7,8 +7,8 @@ from app.models.schema.schemas import User_Pydantic
 from app.resources.exceptions import (
     InactiveUserException,
     InsufficientPermissionsException,
-    ItemNotFoundException,
     InvalidUsernamePasswordException,
+    ItemNotFoundException,
     NameTakenException,
 )
 
