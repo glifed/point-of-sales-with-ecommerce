@@ -41,3 +41,10 @@ def test_create_item(test_app_with_db, headers, api_domain, item_create, fake_na
     assert response.status_code == 201
     assert item["name"] == item_create["name"]
     assert category["name"] == category_json["name"]
+
+    # Cleanup
+    response = test_app_with_db.delete(
+        f"{api_domain}/category/{category_id}",
+        headers=headers,
+    )
+    assert response.status_code == 200

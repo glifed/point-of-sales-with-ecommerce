@@ -9,9 +9,17 @@ def test_create_category(test_app_with_db, headers, api_domain, fake_name):
         headers=headers,
         json={"name": fake_name},
     )
+    category_id = response.json()['id']
 
     assert response.status_code == 201
     assert response.json()["name"] == fake_name
+
+    # Cleanup
+    response = test_app_with_db.delete(
+        f"{api_domain}/category/{category_id}",
+        headers=headers,
+    )
+    assert response.status_code == 200
 
 
 def test_create_category_no_permission(
@@ -35,6 +43,7 @@ def test_create_category_name_taken(test_app_with_db, headers, api_domain, fake_
         json={"name": fake_name},
     )
     category_name = response.json()["name"]
+    category_id = response.json()["id"]
 
     response = test_app_with_db.post(
         f"{api_domain}/category/",
@@ -44,6 +53,13 @@ def test_create_category_name_taken(test_app_with_db, headers, api_domain, fake_
 
     assert response.status_code == 400
     assert response.json() == {"detail": APIResponseMessage.NAME_TAKEN}
+
+    # Cleanup
+    response = test_app_with_db.delete(
+        f"{api_domain}/category/{category_id}",
+        headers=headers,
+    )
+    assert response.status_code == 200
 
 
 def test_get_categories(test_app_with_db, headers, api_domain, fake_name):
@@ -62,6 +78,13 @@ def test_get_categories(test_app_with_db, headers, api_domain, fake_name):
     response_list = response.json()["categories"]
     assert len(list(filter(lambda d: d["id"] == category_id, response_list))) == 1
 
+    # Cleanup
+    response = test_app_with_db.delete(
+        f"{api_domain}/category/{category_id}",
+        headers=headers,
+    )
+    assert response.status_code == 200
+
 
 def test_get_category_single(test_app_with_db, headers, api_domain, fake_name):
 
@@ -76,6 +99,13 @@ def test_get_category_single(test_app_with_db, headers, api_domain, fake_name):
 
     assert response.status_code == 200
     assert response.json() == {"id": category_id, "name": fake_name}
+
+    # Cleanup
+    response = test_app_with_db.delete(
+        f"{api_domain}/category/{category_id}",
+        headers=headers,
+    )
+    assert response.status_code == 200
 
 
 def test_get_category_incorrect_id(test_app_with_db, api_domain):
@@ -110,6 +140,13 @@ def test_update_category(test_app_with_db, headers, api_domain, fake_name, fake_
     assert response.status_code == 200
     assert response.json() == {"id": category_id, "name": fake_name2}
 
+    # Cleanup
+    response = test_app_with_db.delete(
+        f"{api_domain}/category/{category_id}",
+        headers=headers,
+    )
+    assert response.status_code == 200
+
 
 def test_update_category_incorrect_id(test_app_with_db, headers, api_domain, fake_name):
 
@@ -142,7 +179,8 @@ def test_update_category_name_taken(
         headers=headers,
         json={"name": fake_name},
     )
-    category_name = response.json()["name"]
+    category1_name = response.json()["name"]
+    category1_id = response.json()["id"]
 
     # create another category
     response = test_app_with_db.post(
@@ -150,17 +188,27 @@ def test_update_category_name_taken(
         headers=headers,
         json={"name": fake_name2},
     )
-    category_id = response.json()["id"]
+    category2_id = response.json()["id"]
 
     # try to duplicate
     response = test_app_with_db.put(
-        f"{api_domain}/category/{category_id}",
+        f"{api_domain}/category/{category2_id}",
         headers=headers,
-        json={"name": category_name},
+        json={"name": category1_name},
     )
 
     assert response.status_code == 400
     assert response.json() == {"detail": APIResponseMessage.NAME_TAKEN}
+
+    # Cleanup
+    test_app_with_db.delete(
+        f"{api_domain}/category/{category1_id}",
+        headers=headers,
+    )
+    test_app_with_db.delete(
+        f"{api_domain}/category/{category2_id}",
+        headers=headers,
+    )
 
 
 def test_delete_category(test_app_with_db, headers, api_domain, fake_name):
