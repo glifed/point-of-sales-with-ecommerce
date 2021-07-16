@@ -13,10 +13,11 @@ from app.resources.exceptions import (
     ItemNotFoundException,
 )
 from app.resources.strings import APIResponseMessage
-from app.services.category import CategoryService
+from app.services.category import CategoryCRUDService, CategoryValService
 
 router = APIRouter()
-category_service = CategoryService()
+category_crud_service = CategoryCRUDService()
+category_validators = CategoryValService()
 
 
 @router.get("/", name="Category:All", response_model=ResponseCategoryListPaginated)
@@ -26,7 +27,7 @@ async def get_all(skip: Optional[int] = 0, limit: Optional[int] = 100):
     """
 
     try:
-        all_category = await category_service.get_all_categories_paginated(skip, limit)
+        all_category = await category_crud_service.get_all_categories_paginated(skip, limit)
 
     except DoesNotExist:
         raise ItemNotFoundException
@@ -51,9 +52,9 @@ async def create_category(
     Create a new category.
     """
 
-    await category_service.validate_name_taken(category_create.name)
+    await category_validators.validate_name_taken(category_create.name)
     try:
-        category_obj = await category_service.create_category(category_create)
+        category_obj = await category_crud_service.create_category(category_create)
 
     except OperationalError:
         raise ErrorSavingItemException
@@ -71,10 +72,10 @@ async def update_category(
     Update a category.
     """
 
-    await category_service.validate_name_taken(category_update.name)
+    await category_validators.validate_name_taken(category_update.name)
 
     try:
-        updated_category = await category_service.update_category(id, category_update)
+        updated_category = await category_crud_service.update_category(id, category_update)
 
     except DoesNotExist:
         raise ItemNotFoundException
@@ -91,7 +92,7 @@ async def get_specific_category(id: str):
     """
 
     try:
-        category = await category_service.get_category_by_id(id)
+        category = await category_crud_service.get_category_by_id(id)
 
     except DoesNotExist:
         raise ItemNotFoundException
@@ -110,7 +111,7 @@ async def delete_category(
     Delete a category.
     """
     try:
-        deleted = await category_service.delete_category(id)
+        deleted = await category_crud_service.delete_category(id)
         if not deleted:
             raise DoesNotExist
 

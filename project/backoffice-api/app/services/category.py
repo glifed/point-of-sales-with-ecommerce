@@ -1,5 +1,4 @@
 from app.crud.crud_category import category_crud
-from app.models.domain.category import Category
 from app.models.schema.category import ResponseCategoryListPaginated
 from app.models.schema.schemas import (
     Category_List_Pydantic,
@@ -9,13 +8,14 @@ from app.models.schema.schemas import (
 from app.resources.exceptions import NameTakenException
 
 
-class CategoryService:
-    async def validate_name_taken(self, name: str) -> None:
-        category = await category_crud.filter_or_none(name=name)
-        if category:
-            raise NameTakenException
-
-    async def create_category(self, category_create):
+class CategoryCRUDService:
+    """Category CRUD operations.
+    - Create category service.
+    - Read category service.
+    - Update category service.
+    - Delete category service.
+    """
+    async def create_category(self, category_create: CategoryIn_Pydantic):
         category = await category_crud.create(category_create)
         return await Category_Pydantic.from_tortoise_orm(category)
 
@@ -33,8 +33,8 @@ class CategoryService:
         category = await category_crud.filter_by_query(id=id)
         return await Category_Pydantic.from_tortoise_orm(category)
 
-    async def update_category(self, id: str, category: CategoryIn_Pydantic):
-        await category_crud.update(id, category)
+    async def update_category(self, id: str, category_update: CategoryIn_Pydantic):
+        await category_crud.update(id, category_update)
         return await self.get_category_by_id(id)
 
     async def delete_category(self, id: str):
@@ -42,3 +42,11 @@ class CategoryService:
         if not deleted_count:
             return False
         return True
+
+
+class CategoryValService:
+    """Category validators"""
+    async def validate_name_taken(self, name: str) -> None:
+        category = await category_crud.filter_or_none(name=name)
+        if category:
+            raise NameTakenException

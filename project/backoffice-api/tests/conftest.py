@@ -41,7 +41,7 @@ def test_app_with_db() -> Any:
 
 
 @pytest.fixture(scope="module")
-def test_jwt_token(test_app_with_db) -> Any:
+def access_token(test_app_with_db) -> Any:
     # Create fake user
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
@@ -71,11 +71,11 @@ def test_jwt_token(test_app_with_db) -> Any:
     )
     tokens = response.json()  # Access and Refresh tokens
 
-    return tokens
+    return tokens['access_token']
 
 
 @pytest.fixture(scope="module")
-def test_jwt_token_no_scopes(test_app_with_db) -> Any:
+def access_token_noscopes(test_app_with_db) -> Any:
     # Create fake user
     fake_name = "Test_" + Faker().color_name() + Faker().first_name()
 
@@ -98,9 +98,34 @@ def test_jwt_token_no_scopes(test_app_with_db) -> Any:
     )
     tokens = response.json()  # Access and Refresh tokens
 
-    return tokens
+    return tokens['access_token']
+
+
+@pytest.fixture(scope="module")
+def headers(access_token):
+    return {"Authorization": f"{access_token['token_type']} {access_token['token']}"}
+
+
+@pytest.fixture(scope="module")
+def headers_noscope(access_token_noscopes):
+    return {
+        "Authorization": f"{access_token_noscopes['token_type']} {access_token_noscopes['token']}"
+    }
+
+@pytest.fixture(scope="module")
+def api_domain():
+    return settings.API_V1_STR
 
 
 @pytest.fixture(scope="function")
 def fake_name():
     return "Test_" + Faker().color_name() + Faker().first_name()
+
+
+@pytest.fixture(scope="function")
+def fake_name2():
+    return "Test_" + Faker().color_name() + Faker().first_name()
+
+@pytest.fixture(scope="module")
+def fake_sku():
+    return Faker().ean(length=13, prefixes=('00',))

@@ -34,9 +34,7 @@ CategoryIn_Pydantic = pydantic_model_creator(
 
 Item_Pydantic = pydantic_model_creator(Item, name="Item")
 Item_List_Pydantic = pydantic_queryset_creator(Item)
-ItemIn_Pydantic = pydantic_model_creator(
-    Item, name="ItemIn", exclude_readonly=True
-)
+ItemIn_Pydantic = pydantic_model_creator(Item, name="ItemIn", exclude_readonly=True)
 
 
 # custom schemas
@@ -75,6 +73,7 @@ class StatusMixin(BaseModel):
 
 class NameMixin(BaseModel):
     name: str
+
 
 class CategoryBase(BaseModel):
     id: UUID

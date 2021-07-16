@@ -1,35 +1,39 @@
-from app.core.config import get_settings
-
-settings = get_settings()
+import pytest
 
 
-def test_create_item_crud():
-    item_obj = item_crud_service.create()
-    assert item_obj
+@pytest.fixture(scope="function")
+def category_create(fake_name):
+    return {"name": fake_name}
 
-def test_create_item(test_app_with_db, test_jwt_token, fake_name):
-    access_token = test_jwt_token["access_token"]  # jwt access token
+@pytest.fixture(scope="function")
+def item_create(fake_name, fake_sku):
+    return {
+        "name": fake_name,
+        "sku": fake_sku,
+        "serial_number": fake_name,
+        "description": fake_name,
+        "images": [{"image": 1}],
+        "qty": 0,
+        "min_qty": 0,
+        "cost": 0,
+        "margin": 0,
+        "price": 0,
+        "rating": 0,
+        "excento_itbis": False,
+    }
+
+
+def test_create_item(test_app_with_db, headers, api_domain, item_create, category_create):
+    """Test that an item can be created"""
     
     response = test_app_with_db.post(
-        f"{settings.API_V1_STR}/item/",
-        headers={
-            "Authorization": f"{access_token['token_type']} {access_token['token']}"
-        },
-        json={
-            "name": fake_name,
-            "sku": fake_name,
-            "serial_number": fake_name,
-            "description": fake_name,
-            "images": [{"image": 1}],
-            "qty": 0,
-            "min_qty": 0,
-            "cost": 0,
-            "margin": 0,
-            "price": 0,
-            "rating": 0,
-            "excento_itbis": False
-        },
+        f"{api_domain}/category/", headers=headers, json=category_create,
+    )
+    category_id = response.json()["id"]
+
+    response = test_app_with_db.post(
+        f"{api_domain}/item/{category_id}", headers=headers, json=item_create,
     )
 
     assert response.status_code == 201
-    assert response.json()["name"] == fake_name
+    assert response.json()["name"] == item_create['name']
